@@ -19,7 +19,8 @@ import sys
 def log(x):
     return math.log(x,2)
 
-draw = False
+draw = True
+dpi = 100
 
 resolution = 100
 k = 1
@@ -64,7 +65,7 @@ xs.append(x); ys.append(y)
 plt.rcParams["figure.figsize"] = (16,12)
 plt.legend(loc="upper right")
 if draw:
-    plt.savefig('fig_1a_1.png', dpi=100)
+    plt.savefig('fig_1a_1.png', dpi=dpi)
 
 plt.clf()
 ########################################
@@ -83,7 +84,7 @@ xs.append(x); ys.append(y)
 plt.rcParams["figure.figsize"] = (16,12)
 plt.legend(loc="upper right")
 if draw:
-    plt.savefig('fig_1a_2.png', dpi=100)
+    plt.savefig('fig_1a_2.png', dpi=dpi)
 
 plt.clf()
 ########################################
@@ -99,14 +100,14 @@ def find_divergence(x1, x2, y1, y2):
             return i
 
 def entropy(y_sample, y_full):
-    to_sum = []
-    counts = Counter(y_sample)
-    for y in y_sample:
-        px = counts[y] / len(y_sample)
-        log_px = log(px)
-        to_sum.append(px * log_px)
-
-    return sum(to_sum) * -1
+    y_sample = [int(y) for y in y_sample]
+    calcClass = JPackage("infodynamics.measures.discrete").EntropyCalculatorDiscrete
+    #calc = calcClass(11)
+    calc = calcClass(17)
+    calc.initialise()
+    calc.addObservations(y_sample)
+    ret = calc.computeAverageLocalOfObservations()
+    return ret
 
 def mutual_info(y0, y1):
     #y0 = y0 * 10
@@ -131,22 +132,35 @@ def venn_diagram(y0_full, y1_full, n, beginning=True):
         y0_sample = np.digitize(y0_full[-n:], np.linspace(0,1,11))
         y1_sample = np.digitize(y1_full[-n:], np.linspace(0,1,11))
 
-    y0_entropy = round(entropy(y0_sample, y0_full), 4)
-    y1_entropy = round(entropy(y1_sample, y1_full), 4)
-    mi = round(mutual_info(y0_sample, y1_sample), 4)
-    #mi = y0_entropy + y1_entropy - (
-    venn2(subsets=(y0_entropy, y1_entropy, mi), set_labels=('left', 'right', 'MI'))
-    plt.show()
-    plt.clf()
+    y0_entropy = entropy(y0_sample, y0_full)
+    y1_entropy = entropy(y1_sample, y1_full)
+    mi = mutual_info(y0_sample, y1_sample)
+
+    y0_venn_val = y0_entropy - mi
+    y1_venn_val = y1_entropy - mi
+    subsets = [round(x, 4) for x in [y0_venn_val, y1_venn_val, mi]]
+    venn2(subsets=subsets, set_labels=('left', 'right', 'MI'))
 
 n = find_divergence(xs[2],xs[3], ys[2], ys[3])
 
 ################Non-Chaotic#############
 venn_diagram(ys[0], ys[1], n)
+if draw:
+    plt.savefig('fig_1b_non_chaotic_beginning.png', dpi=dpi)
+plt.clf()
 venn_diagram(ys[0], ys[1], n, beginning=False)
+if draw:
+    plt.savefig('fig_1b_non_chaotic_end.png', dpi=dpi)
+plt.clf()
 ########################################
 
 ################Chaotic#################
 venn_diagram(ys[2], ys[3], n)
+if draw:
+    plt.savefig('fig_1b_chaotic_beginning.png', dpi=dpi)
+plt.clf()
 venn_diagram(ys[2], ys[3], n, beginning=False)
+if draw:
+    plt.savefig('fig_1b_chaotic_end.png', dpi=dpi)
+plt.clf()
 ########################################
