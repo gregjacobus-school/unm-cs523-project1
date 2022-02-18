@@ -99,24 +99,23 @@ def find_divergence(x1, x2, y1, y2):
         if y2[i] - y1[i] > 0.1:
             return i
 
-def entropy(y_sample, y_full):
+def entropy(y_sample, n):
     y_sample = [int(y) for y in y_sample]
     calcClass = JPackage("infodynamics.measures.discrete").EntropyCalculatorDiscrete
-    #calc = calcClass(11)
-    calc = calcClass(17)
+    calc = calcClass(n)
     calc.initialise()
     calc.addObservations(y_sample)
     ret = calc.computeAverageLocalOfObservations()
     return ret
 
-def mutual_info(y0, y1):
+def mutual_info(y0, y1, n):
     #y0 = y0 * 10
     #y1 = y1 * 10
     data = []
     for i in range(len(y0)):
         data.append([y0[i], y1[i]])
     calcClass = JPackage("infodynamics.measures.discrete").MutualInformationCalculatorDiscrete
-    calc = calcClass(11, 0)
+    calc = calcClass(n, 0)
     calc.initialise()
     calc.addObservations(y0, y1)
     result = calc.computeAverageLocalOfObservations()
@@ -132,9 +131,9 @@ def venn_diagram(y0_full, y1_full, n, beginning=True):
         y0_sample = np.digitize(y0_full[-n:], np.linspace(0,1,11))
         y1_sample = np.digitize(y1_full[-n:], np.linspace(0,1,11))
 
-    y0_entropy = entropy(y0_sample, y0_full)
-    y1_entropy = entropy(y1_sample, y1_full)
-    mi = mutual_info(y0_sample, y1_sample)
+    y0_entropy = entropy(y0_sample, n)
+    y1_entropy = entropy(y1_sample, n)
+    mi = mutual_info(y0_sample, y1_sample, n)
 
     y0_venn_val = y0_entropy - mi
     y1_venn_val = y1_entropy - mi
@@ -164,3 +163,22 @@ if draw:
     plt.savefig('fig_1b_chaotic_end.png', dpi=dpi)
 plt.clf()
 ########################################
+
+####### Transfer Entropy ##############
+def te(y0, y1, n):
+    #First, discretize the values
+    y0_discrete = np.digitize(y0, np.linspace(0,1,11))
+    y1_discrete = np.digitize(y1, np.linspace(0,1,11))
+
+    y0_discrete = [int(y) for y in y0_discrete]
+    y1_discrete = [int(y) for y in y1_discrete]
+
+    calcClass = JPackage("infodynamics.measures.discrete").TransferEntropyCalculatorDiscrete
+    calc = calcClass(n, 1)
+    calc.initialise()
+    calc.addObservations(y0_discrete, y1_discrete)
+    result = calc.computeAverageLocalOfObservations()
+    return result
+
+print(te(ys[0], ys[1], n))
+print(te(ys[2], ys[3], n))
