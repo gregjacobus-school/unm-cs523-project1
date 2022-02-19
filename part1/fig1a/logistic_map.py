@@ -180,5 +180,9 @@ def te(y0, y1, n):
     result = calc.computeAverageLocalOfObservations()
     return result
 
-print(te(ys[0], ys[1], n))
-print(te(ys[2], ys[3], n))
+non_chaotic_te = te(ys[0], ys[1], n)
+chaotic_te = te(ys[2], ys[3], n)
+print()
+print("Transfer Entropy:")
+print(f"\tNon-chaotic transfer entropy = {non_chaotic_te}")
+print(f"\tChaotic transfer entropy = {chaotic_te}")
