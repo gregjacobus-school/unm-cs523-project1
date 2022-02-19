@@ -19,7 +19,6 @@ import sys
 def log(x):
     return math.log(x,2)
 
-draw = True
 dpi = 100
 
 resolution = 100
@@ -55,18 +54,17 @@ ys = []
 r = 2.8
 
 y0 = 0.1
-x, y = plot_func(r, y0, f"r={r}, y0={y0}", thickness=3)
+x, y = plot_func(r, y0, f"r={r}, $y_{0}$={y0}", thickness=3)
 xs.append(x); ys.append(y)
 
 y0 = 0.11
-x, y = plot_func(r, y0, f"r={r}, y0={y0}")
+x, y = plot_func(r, y0, f"r={r}, $y_{0}$={y0}")
 xs.append(x); ys.append(y)
 
 plt.rcParams["figure.figsize"] = (16,12)
 plt.legend(loc="lower right")
-plt.title("Logistic Map in Non-Chaotic Regime")
-if draw:
-    plt.savefig('fig_1a_non_chaotic.png', dpi=dpi)
+plt.title("Logistic Map in Non-Chaotic Regime", fontsize=18)
+plt.savefig('fig_1a_non_chaotic.png', dpi=dpi, bbox_inches="tight")
 
 plt.clf()
 ########################################
@@ -75,18 +73,17 @@ plt.clf()
 r = 3.8
 
 y0 = 0.1
-x, y = plot_func(r, y0, f"r={r}, y0={y0}")
+x, y = plot_func(r, y0, f"r={r}, $y_{0}$={y0}")
 xs.append(x); ys.append(y)
 
 y0 = 0.101
-x, y = plot_func(r, y0, f"r={r}, y0={y0}")
+x, y = plot_func(r, y0, f"r={r}, $y_{0}$={y0}")
 xs.append(x); ys.append(y)
 
 plt.rcParams["figure.figsize"] = (16,12)
 plt.legend(loc="lower right")
-plt.title("Logistic Map in Chaotic Regime")
-if draw:
-    plt.savefig('fig_1a_chaotic.png', dpi=dpi)
+plt.title("Logistic Map in Chaotic Regime", fontsize=18)
+plt.savefig('fig_1a_chaotic.png', dpi=dpi, bbox_inches="tight")
 
 plt.clf()
 ########################################
@@ -147,27 +144,23 @@ n = find_divergence(xs[2],xs[3], ys[2], ys[3])
 
 ################Non-Chaotic#############
 venn_diagram(ys[0], ys[1], n)
-plt.title("Entropy of Beginning of Non-Chaotic Regime")
-if draw:
-    plt.savefig('fig_1b_non_chaotic_beginning.png', dpi=dpi)
+plt.title("Entropy of Beginning of Non-Chaotic Regime", fontsize=18)
+plt.savefig('fig_1b_non_chaotic_beginning.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 venn_diagram(ys[0], ys[1], n, beginning=False)
-plt.title("Entropy of End of Non-Chaotic Regime")
-if draw:
-    plt.savefig('fig_1b_non_chaotic_end.png', dpi=dpi)
+plt.title("Entropy of End of Non-Chaotic Regime", fontsize=18)
+plt.savefig('fig_1b_non_chaotic_end.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 ########################################
 
 ################Chaotic#################
 venn_diagram(ys[2], ys[3], n)
-plt.title("Entropy of Beginning of Chaotic Regime")
-if draw:
-    plt.savefig('fig_1b_chaotic_beginning.png', dpi=dpi)
+plt.title("Entropy of Beginning of Chaotic Regime", fontsize=18)
+plt.savefig('fig_1b_chaotic_beginning.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 venn_diagram(ys[2], ys[3], n, beginning=False)
-plt.title("Entropy of End of Chaotic Regime")
-if draw:
-    plt.savefig('fig_1b_chaotic_end.png', dpi=dpi)
+plt.title("Entropy of End of Chaotic Regime", fontsize=18)
+plt.savefig('fig_1b_chaotic_end.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 ########################################
 
