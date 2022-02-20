@@ -10,8 +10,11 @@ from textwrap import wrap
 fn = 'United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv'
 jarLocation = "/Users/gjacobu/Documents/school/CAS/unm-cs523-project1/jidt/infodynamics.jar"
 # Start the JVM (add the "-Xmx" option with say 1024M if you get crashes due to not enough memory space)
-startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx12000m')
+#startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx12000m')
+startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx4G')
 num_bins = 500
+num_bins = 25
+k = 4 # Number of timesteps to look back
 dpi = 100
 
 df = pd.read_csv(fn, parse_dates=['submission_date'])
@@ -72,14 +75,17 @@ def venn_diagram(y0, y1):
 def te(y0, y1):
     #First, discretize the values
     max_val = max((max(y0), max(y1)))
-    y0_discrete = np.digitize(y0, np.linspace(0,max_val,num_bins))
-    y1_discrete = np.digitize(y1, np.linspace(0,max_val,num_bins))
+    min_val = min((min(y0), min(y1)))
+    print(min_val, max_val)
+    y0_discrete = np.digitize(y0, np.linspace(min_val,max_val,num_bins))
+    y1_discrete = np.digitize(y1, np.linspace(min_val,max_val,num_bins))
+    unique_vals = len(set(y0_discrete).union(set(y1_discrete)))
 
     y0_discrete = [int(y) for y in y0_discrete]
     y1_discrete = [int(y) for y in y1_discrete]
 
     calcClass = JPackage("infodynamics.measures.discrete").TransferEntropyCalculatorDiscrete
-    calc = calcClass(num_bins+1, 1)
+    calc = calcClass(num_bins+1, k)
     calc.initialise()
     calc.addObservations(y0_discrete, y1_discrete)
     result = calc.computeAverageLocalOfObservations()
@@ -96,6 +102,7 @@ plt.ylabel("Number of New COVID Cases")
 plt.legend()
 title = "\n".join(wrap("Plot of COVID During Omicron Surge for New Mexico and Nevada", 40))
 plt.title(title, fontsize=18)
+plt.xticks(rotation=-27)
 plt.savefig('fig_3_covid_plot.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
