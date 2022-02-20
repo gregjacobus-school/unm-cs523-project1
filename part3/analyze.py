@@ -9,8 +9,9 @@ from textwrap import wrap
 
 fn = 'United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv'
 jarLocation = "/Users/gjacobu/Documents/school/CAS/unm-cs523-project1/jidt/infodynamics.jar"
-startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation)
-num_bins = 100
+# Start the JVM (add the "-Xmx" option with say 1024M if you get crashes due to not enough memory space)
+startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx12000m')
+num_bins = 500
 dpi = 100
 
 df = pd.read_csv(fn, parse_dates=['submission_date'])
@@ -66,6 +67,7 @@ def venn_diagram(y0, y1):
     subsets = [round(x, 4) for x in [y0_venn_val, y1_venn_val, mi]]
     v = venn2(subsets=subsets, set_labels=['', '', ''])
     plt.legend(handles=v.patches, labels=["H(NM)","H(NV)","I(NM,NV)"])
+    return y0_venn_val, y1_venn_val, mi
 
 def te(y0, y1):
     #First, discretize the values
@@ -97,7 +99,7 @@ plt.title(title, fontsize=18)
 plt.savefig('fig_3_covid_plot.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
-venn_diagram(nm_data['new_case'], nv_data['new_case'])
+y0_venn_val, y1_venn_val, mi = venn_diagram(nm_data['new_case'], nv_data['new_case'])
 title = wrap("Entropy and Mutual Information for COVID During Omicron Surge for New Mexico and Nevada", 40)
 plt.title('\n'.join(title))
 plt.savefig('fig_3_covid_venn.png', dpi=dpi, bbox_inches="tight")
@@ -106,5 +108,7 @@ plt.clf()
 
 transfer_ent_nm_nv = te(nm_data['new_case'], nv_data['new_case'])
 transfer_ent_nv_nm = te(nv_data['new_case'], nm_data['new_case'])
-print(f"Transfer Entropy (nm, nv): {transfer_ent_nm_nv}")
-print(f"Transfer Entropy (nv, nm): {transfer_ent_nv_nm}")
+print(f"Transfer Entropy (nm -> nv): {transfer_ent_nm_nv}")
+print(f"Transfer Entropy (nv -> nm): {transfer_ent_nv_nm}")
+print(f"Transfer Entropy (nm -> nv) / nv_venn_val = {transfer_ent_nm_nv / y1_venn_val}")
+print(f"Transfer Entropy (nv -> nm) / nm_venn_val = {transfer_ent_nv_nm / y0_venn_val}")
