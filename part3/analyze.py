@@ -5,18 +5,20 @@ import matplotlib.pyplot as plt
 from matplotlib_venn import venn2
 from jpype import *
 import numpy as np
+from textwrap import wrap
 
 fn = 'United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv'
 jarLocation = "/Users/gjacobu/Documents/school/CAS/unm-cs523-project1/jidt/infodynamics.jar"
 startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation)
 num_bins = 100
+dpi = 100
 
 df = pd.read_csv(fn, parse_dates=['submission_date'])
 
 def preprocess(df, state, variant='omicron'):
     new_df = df[df['state'] == state]
     if variant == 'omicron':
-        new_df = new_df[new_df['submission_date'] > '2021-12-01']
+        new_df = new_df[new_df['submission_date'] >= '2021-12-01']
     new_df = new_df.sort_values('submission_date')
 
     new_df.loc[df['new_case'] == 0, 'new_case'] = np.nan
@@ -37,8 +39,6 @@ def entropy(y_sample):
     return ret
 
 def mutual_info(y0, y1):
-    #y0 = y0 * 10
-    #y1 = y1 * 10
     data = []
     for i in range(len(y0)):
         data.append([y0[i], y1[i]])
@@ -85,19 +85,26 @@ def te(y0, y1):
 
 nm_data = preprocess(df, 'NM')
 nv_data = preprocess(df, 'NV')
-nv_data.to_csv('nv_data.csv')
-nm_data.to_csv('nm_data.csv')
 
 plot(nm_data, 'NM')
 plot(nv_data, 'NV')
 
+plt.xlabel("Date")
+plt.ylabel("Number of New COVID Cases")
 plt.legend()
-plt.show()
+title = "\n".join(wrap("Plot of COVID During Omicron Surge for New Mexico and Nevada", 40))
+plt.title(title, fontsize=18)
+plt.savefig('fig_3_covid_plot.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
 venn_diagram(nm_data['new_case'], nv_data['new_case'])
-plt.show()
+title = wrap("Entropy and Mutual Information for COVID During Omicron Surge for New Mexico and Nevada", 40)
+plt.title('\n'.join(title))
+plt.savefig('fig_3_covid_venn.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
-print(te(nm_data['new_case'], nv_data['new_case']))
-print(te(nv_data['new_case'], nm_data['new_case']))
+
+transfer_ent_nm_nv = te(nm_data['new_case'], nv_data['new_case'])
+transfer_ent_nv_nm = te(nv_data['new_case'], nm_data['new_case'])
+print(f"Transfer Entropy (nm, nv): {transfer_ent_nm_nv}")
+print(f"Transfer Entropy (nv, nm): {transfer_ent_nv_nm}")
