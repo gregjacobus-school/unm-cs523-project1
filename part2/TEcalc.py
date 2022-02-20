@@ -11,7 +11,10 @@ def get_data(filename):
     return np.loadtxt(filename, delimiter=",", dtype=int)
 
 def calc_TE(v1, v2, k, teCalc):
-    teCalc.initialise(max(v1.max(), v2.max())+1, k, 1, 1, 1, 1)
+    num_bins = 25
+    v1 = np.digitize(v1, np.linspace(1, v1.max(), num_bins))
+    v2 = np.digitize(v2, np.linspace(1, v2.max(), num_bins))
+    teCalc.initialise(num_bins + 1, k, 1, 1, 1, 1)
     twoDTimeSeriesPython = list()
     twoDTimeSeriesPython.append(v1.tolist())
     twoDTimeSeriesPython.append(v2.tolist())
@@ -25,7 +28,7 @@ def get_te(eps, mpop, data, teCalc):
     for i in range(3):
         maxTD = 0
         maxBU = 0
-        for k in range(2): #4): # different from deterding & wright
+        for k in range(4): #4): # different from deterding & wright
             # column-wise comparison
             TD_TE = calc_TE(data[:,0], data[:,1+i], k+1, teCalc)
             BU_TE = calc_TE(data[:,1+i], data[:,0], k+1, teCalc)

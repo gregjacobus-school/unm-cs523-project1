@@ -12,6 +12,9 @@ def get_data(filename):
 
 def calc_MI(v1, v2, miCalc):
     miCalc.initialise()
+    #num_bins = 25
+    #v1 = np.digitize(v1, np.linspace(1, v1.max(), num_bins))
+    #v2 = np.digitize(v2, np.linspace(1, v2.max(), num_bins))
     sourceNumpyJArray = jpype.JArray(jpype.JInt, 1)(v1.tolist())
     destNumpyJArray = jpype.JArray(jpype.JInt, 1)(v2.tolist())
     miCalc.addObservations(sourceNumpyJArray, destNumpyJArray)

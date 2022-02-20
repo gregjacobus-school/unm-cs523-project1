@@ -16,7 +16,7 @@ def get_error(df):
         m, s, c = stats.loc[i]
         ci95_hi.append(m + 2.045*s/math.sqrt(c))
         ci95_lo.append(m - 2.045*s/math.sqrt(c))
-    return ci95_hi, ci95_lo
+    return np.array(ci95_hi), np.array(ci95_lo)
 
 def main():
     df_TD = pd.read_csv("TD_data.csv", sep=" ", header=None)
@@ -32,19 +32,22 @@ def main():
     trans1 = ax.transData + ScaledTranslation(5/72, 0, fig.dpi_scale_trans)
     trans2 = ax.transData + ScaledTranslation(-5/72, 0, fig.dpi_scale_trans)
 
+    y_vals = df_TD.mean(axis=1)
     line1 = ax.errorbar(
             np.linspace(0.2, 0.3, 5),
-            df_TD.mean(axis=1), 
-            (TD_error_low, TD_error_high),
+            y_vals,
+            (y_vals - TD_error_low, TD_error_high - y_vals),
             color="tab:red",
             ecolor="tab:red",
             transform=trans1,
             label="Average $T_{M->X}$"
         )
+
+    y_vals = df_BU.mean(axis=1)
     line2 = ax.errorbar(
             np.linspace(0.2, 0.3, 5),
-            df_BU.mean(axis=1), 
-            (BU_error_low, BU_error_high),
+            y_vals,
+            (y_vals - BU_error_low, BU_error_high - y_vals),
             color="tab:blue",
             ecolor="tab:blue",
             transform=trans2,
