@@ -9,6 +9,7 @@ from matplotlib.transforms import ScaledTranslation
 
 def get_error(df):
     stats = pd.DataFrame([df.mean(axis=1), df.std(axis=1), df.count(axis=1)]).T
+    print(stats)
     stats.columns = ["mean", "std", "count"]
     ci95_hi = list()
     ci95_lo = list()
@@ -16,7 +17,7 @@ def get_error(df):
         m, s, c = stats.loc[i]
         ci95_hi.append(m + 2.045*s/math.sqrt(c))
         ci95_lo.append(m - 2.045*s/math.sqrt(c))
-    return ci95_hi, ci95_lo
+    return np.array(ci95_hi), np.array(ci95_lo)
 
 def main():
     df_MI = pd.read_csv("MI_data.csv", sep=" ", header=None)
@@ -27,16 +28,13 @@ def main():
     ax.set_xlabel("epsilon")
     ax.set_ylabel("mutual information")
 
-    trans1 = ax.transData + ScaledTranslation(5/72, 0, fig.dpi_scale_trans)
-    trans2 = ax.transData + ScaledTranslation(-5/72, 0, fig.dpi_scale_trans)
-
+    y_vals = df_MI.mean(axis=1)
     line1 = ax.errorbar(
             np.linspace(0.2, 0.3, 5),
-            df_MI.mean(axis=1), 
-            (MI_error_low, MI_error_high),
+            y_vals,
+            yerr=(y_vals - MI_error_low, MI_error_high - y_vals),
             color="tab:red",
             ecolor="tab:red",
-            transform=trans1,
             label="Mutual Information"
         )
     ax.legend(handles=[line1])
