@@ -12,9 +12,10 @@ def get_data(filename):
 
 def calc_TE(v1, v2, k, teCalc):
     num_bins = 25
-    v1 = np.digitize(v1, np.linspace(1, v1.max(), num_bins))
-    v2 = np.digitize(v2, np.linspace(1, v2.max(), num_bins))
-    teCalc.initialise(num_bins + 1, k, 1, 1, 1, 1)
+    #v1 = np.digitize(v1, np.linspace(1, v1.max(), num_bins))
+    #v2 = np.digitize(v2, np.linspace(1, v2.max(), num_bins))
+    #teCalc.initialise(num_bins + 1, k, 1, 1, 1, 1)
+    teCalc.initialise(4*num_bins + 1, k, 1, 1, 1, 1)
     twoDTimeSeriesPython = list()
     twoDTimeSeriesPython.append(v1.tolist())
     twoDTimeSeriesPython.append(v2.tolist())
@@ -43,7 +44,7 @@ def get_te(eps, mpop, data, teCalc):
 def main():
     # Start the JVM
     jarLocation = str(Path("~/.local/lib/jidt/infodynamics.jar").expanduser())
-    jpype.startJVM(jpype.getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, "-Xmx4G")
+    jpype.startJVM(jpype.getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, "-Xmx40G")
     teCalcClass = jpype.JPackage("infodynamics.measures.discrete").TransferEntropyCalculatorDiscrete
     teCalc = teCalcClass(2,1)
 
