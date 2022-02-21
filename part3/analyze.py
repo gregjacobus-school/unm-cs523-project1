@@ -11,10 +11,10 @@ fn = 'United_States_COVID-19_Cases_and_Deaths_by_State_over_Time.csv'
 jarLocation = "/Users/gjacobu/Documents/school/CAS/unm-cs523-project1/jidt/infodynamics.jar"
 # Start the JVM (add the "-Xmx" option with say 1024M if you get crashes due to not enough memory space)
 #startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx12000m')
-startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx4G')
+startJVM(getDefaultJVMPath(), "-ea", "-Djava.class.path=" + jarLocation, '-Xmx62G')
 num_bins = 500
-num_bins = 25
-k = 4 # Number of timesteps to look back
+#num_bins = 100
+k = 0 # Number of timesteps to look back
 dpi = 100
 
 df = pd.read_csv(fn, parse_dates=['submission_date'])
@@ -76,7 +76,6 @@ def te(y0, y1):
     #First, discretize the values
     max_val = max((max(y0), max(y1)))
     min_val = min((min(y0), min(y1)))
-    print(min_val, max_val)
     y0_discrete = np.digitize(y0, np.linspace(min_val,max_val,num_bins))
     y1_discrete = np.digitize(y1, np.linspace(min_val,max_val,num_bins))
     unique_vals = len(set(y0_discrete).union(set(y1_discrete)))
@@ -100,22 +99,23 @@ plot(nv_data, 'NV')
 plt.xlabel("Date")
 plt.ylabel("Number of New COVID Cases")
 plt.legend()
-title = "\n".join(wrap("Plot of COVID During Omicron Surge for New Mexico and Nevada", 40))
+title = "\n".join(wrap("Plot of Number of New COVID Cases During Omicron Surge for New Mexico and Nevada", 40))
 plt.title(title, fontsize=18)
 plt.xticks(rotation=-27)
 plt.savefig('fig_3_covid_plot.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
 y0_venn_val, y1_venn_val, mi = venn_diagram(nm_data['new_case'], nv_data['new_case'])
-title = wrap("Entropy and Mutual Information for COVID During Omicron Surge for New Mexico and Nevada", 40)
-plt.title('\n'.join(title))
+title = wrap("Entropy and Mutual Information for Number of New COVID Cases During Omicron Surge for New Mexico and Nevada", 40)
+plt.title('\n'.join(title), fontsize=18)
 plt.savefig('fig_3_covid_venn.png', dpi=dpi, bbox_inches="tight")
 plt.clf()
 
 
 transfer_ent_nm_nv = te(nm_data['new_case'], nv_data['new_case'])
 transfer_ent_nv_nm = te(nv_data['new_case'], nm_data['new_case'])
-print(f"Transfer Entropy (nm -> nv): {transfer_ent_nm_nv}")
-print(f"Transfer Entropy (nv -> nm): {transfer_ent_nv_nm}")
-print(f"Transfer Entropy (nm -> nv) / nv_venn_val = {transfer_ent_nm_nv / y1_venn_val}")
-print(f"Transfer Entropy (nv -> nm) / nm_venn_val = {transfer_ent_nv_nm / y0_venn_val}")
+print(f"Transfer Entropy (nm -> nv): {round(transfer_ent_nm_nv, 4)}")
+print(f"Transfer Entropy (nv -> nm): {round(transfer_ent_nv_nm, 4)}")
+print(f"Transfer Entropy (nm -> nv) / nv_venn_val = {round(transfer_ent_nm_nv / y1_venn_val, 4)}")
+print(f"Transfer Entropy (nv -> nm) / nm_venn_val = {round(transfer_ent_nv_nm / y0_venn_val, 4)}")
+shutdownJVM()
