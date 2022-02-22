@@ -266,9 +266,10 @@ def fig_4():
     df_TE["TE_alpha_s_d"] = df_TE.apply(lambda x: get_TE(x, df, False, "alpha"), axis=1)
     df_TE["TE_alpha_d_s"] = df_TE.apply(lambda x: get_TE(x, df, True, "alpha"), axis=1)
 
-    print(df_TE[columns].max())
-    print(df_TE.groupby("source")[columns].max())
-    print(df_TE.groupby("destination")[columns].max())
+    print(df_TE)
+    #print(df_TE[columns].max())
+    #print(df_TE.groupby("source")[columns].max())
+    #print(df_TE.groupby("destination")[columns].max())
     #df_TE_sorted = df_TE.iloc[:, df_TE.max().sort_values(ascending=False).index]
     #print(df_TE_sorted.head())
 
